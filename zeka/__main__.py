@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.ERROR)
 
 
 def load_config_file():
-    file_path = os.path.expanduser("~/.config/zet.toml")
+    file_path = os.path.expanduser("~/.config/zeka.toml")
     if os.path.isfile(file_path):
         try:
             with open(file_path, "rb") as f:
@@ -67,13 +67,13 @@ def create_front_matter(args):
     return metadata["title"], front_matter
 
 
-def create_zet(filename: str, front_matter, path):
+def create_zeka(filename: str, front_matter, path):
     path += filename
     with open(f"{path}.md", "w") as f:
         f.write(front_matter)
 
 
-def open_zet(filename):
+def open_zeka(filename):
     editor = os.environ.get("EDITOR")
     subprocess.run([editor, f"{filename}.md"])
 
@@ -87,9 +87,9 @@ def main():
     else:
         save_path = config["settings"]["save_path"]
         save_path = os.path.expanduser(save_path)
-    create_zet(filename=filename, front_matter=front_matter, path=save_path)
+    create_zeka(filename=filename, front_matter=front_matter, path=save_path)
     file = save_path + filename
-    open_zet(file)
+    open_zeka(file)
 
 
 if __name__ == "__main__":
