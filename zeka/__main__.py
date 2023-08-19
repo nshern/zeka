@@ -31,6 +31,7 @@ def collect_user_input():
     parser.add_argument("-t", "--title")
     parser.add_argument("-a", "--tags", default="[]")
     parser.add_argument("-l", "--lang", default="en-US")
+    parser.add_argument("-e", "--editor")
 
     args = parser.parse_args()
 
@@ -73,9 +74,18 @@ def create_zeka(filename: str, front_matter, path):
         f.write(front_matter)
 
 
-def open_zeka(filename):
-    editor = os.environ.get("EDITOR")
-    subprocess.run([editor, f"{filename}.md"])
+def open_zeka(filename: str, args):
+    if args.editor:
+        editor = args.editor
+
+    elif "EDITOR" in os.environ:
+        editor = os.environ.get("EDITOR")
+
+        if editor is not None:
+            subprocess.run([editor, f"{filename}.md"])
+
+    else:
+        raise Exception("No default editor found and none was specified")
 
 
 def main():
@@ -89,7 +99,7 @@ def main():
         save_path = os.path.expanduser(save_path)
     create_zeka(filename=filename, front_matter=front_matter, path=save_path)
     file = save_path + filename
-    open_zeka(file)
+    open_zeka(file, args)
 
 
 if __name__ == "__main__":
