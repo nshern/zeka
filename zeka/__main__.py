@@ -25,7 +25,7 @@ def load_config_file():
         return None
 
 
-def collect_user_input():
+def parse_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-t", "--title")
@@ -89,7 +89,7 @@ def open_zeka(filename: str, args):
 
 
 def main():
-    args = collect_user_input()
+    args = parse_args()
     filename, front_matter = create_front_matter(args)
     config = load_config_file()
     if config is None:
