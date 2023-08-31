@@ -4,6 +4,8 @@ import os
 import subprocess
 import tomllib
 from datetime import datetime
+import yaml
+
 
 import randomname
 
@@ -25,13 +27,49 @@ def load_config_file():
         return None
 
 
+def get_files_in_directory(directory):
+    """
+    Returns all markdown files in the specified directory
+    """
+    return [
+        i
+        for i in os.listdir(directory)
+        if os.path.isfile(os.path.join(directory, i)) and i.endswith(".md")
+    ]
+
+
+def sync():
+    print("Syncing notes...")
+    save_path = get_save_path()
+    files = get_files_in_directory(save_path)
+    files = [f"{save_path}{i}" for i in files]
+
+    print(f"found {len(files)}..")
+
+    # TODO: WORK FROM HERE
+    for i in files:
+        with open(i, "r") as f:
+            note = f.read()
+            print(note)
+            # TODO: Cut front matter from note and continue..
+            # TODO: Use yaml library
+            # See realpython.com/python-yaml/#install-the-pyyaml-library
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
+    subparser = parser.add_subparsers()
 
-    parser.add_argument("-t", "--title")
-    parser.add_argument("-a", "--tags", default="[]")
-    parser.add_argument("-l", "--lang", default="en-US")
-    parser.add_argument("-e", "--editor")
+    new_parser = subparser.add_parser("new", help="create new note")
+    new_parser.add_argument("-t", "--title")
+    new_parser.add_argument("-a", "--tags", default="[]")
+    new_parser.add_argument("-l", "--lang", default="en-US")
+    new_parser.add_argument("-o", "--open")
+
+    sync_parser = subparser.add_parser("sync", help="sync notes")
+    sync_parser.set_defaults(sync=sync)
+
+    # clean_parser = subparser.add_parser("clean", help="clean up!")
 
     args = parser.parse_args()
 
@@ -74,8 +112,20 @@ def create_zeka(filename: str, front_matter, path):
         f.write(front_matter)
 
 
+def get_save_path():
+    config = load_config_file()
+
+    if config is None:
+        save_path = "./"
+    else:
+        save_path = config["settings"]["save_path"]
+        save_path = os.path.expanduser(save_path)
+
+    return save_path
+
+
 def open_zeka(filename: str, args):
-    if args.editor:
+    if "editor" in args:
         editor = args.editor
 
     elif "EDITOR" in os.environ:
@@ -88,19 +138,28 @@ def open_zeka(filename: str, args):
         raise Exception("No default editor found and none was specified")
 
 
+def test():
+    sync()
+
+
 def main():
     args = parse_args()
+
+    if "sync" in args:
+        args.sync()
+        return
+
     filename, front_matter = create_front_matter(args)
-    config = load_config_file()
-    if config is None:
-        save_path = "./"
-    else:
-        save_path = config["settings"]["save_path"]
-        save_path = os.path.expanduser(save_path)
+
+    save_path = get_save_path()
+
     create_zeka(filename=filename, front_matter=front_matter, path=save_path)
+
     file = save_path + filename
+
     open_zeka(file, args)
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    test()
