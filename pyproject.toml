@@ -10,6 +10,7 @@ license = "MIT"
 python = "^3.11"
 randomname = "^0.2.1"
 pyyaml = "^6.0.1"
+python-frontmatter = "^1.0.0"
 
 [tool.poetry.scripts]
 zk = 'zeka.__main__:main'

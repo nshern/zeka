@@ -4,9 +4,8 @@ import os
 import subprocess
 import tomllib
 from datetime import datetime
-import yaml
 
-
+import frontmatter
 import randomname
 
 logging.basicConfig(level=logging.ERROR)
@@ -38,24 +37,6 @@ def get_files_in_directory(directory):
     ]
 
 
-def sync():
-    print("Syncing notes...")
-    save_path = get_save_path()
-    files = get_files_in_directory(save_path)
-    files = [f"{save_path}{i}" for i in files]
-
-    print(f"found {len(files)}..")
-
-    # TODO: WORK FROM HERE
-    for i in files:
-        with open(i, "r") as f:
-            note = f.read()
-            print(note)
-            # TODO: Cut front matter from note and continue..
-            # TODO: Use yaml library
-            # See realpython.com/python-yaml/#install-the-pyyaml-library
-
-
 def parse_args():
     parser = argparse.ArgumentParser()
     subparser = parser.add_subparsers()
@@ -69,6 +50,7 @@ def parse_args():
     sync_parser = subparser.add_parser("sync", help="sync notes")
     sync_parser.set_defaults(sync=sync)
 
+    # TODO: Create clean parser to delete empty files or with only front matter
     # clean_parser = subparser.add_parser("clean", help="clean up!")
 
     args = parser.parse_args()
@@ -138,8 +120,27 @@ def open_zeka(filename: str, args):
         raise Exception("No default editor found and none was specified")
 
 
-def test():
-    sync()
+def sync():
+    save_path = get_save_path()
+    files = get_files_in_directory(save_path)
+    files = [f"{save_path}{i}" for i in files]
+
+    sync_required = False
+
+    for i in files:
+        with open(i, "r") as f:
+            file = frontmatter.load(f)
+            if "title" in file:
+                if f"{file['title']}" != f"{i.split('/')[-1].split('.')[0]}":
+                    sync_required = True
+                    foo = i.split("/")
+                    foo.pop()
+                    new_path = f"{'/'.join(foo)}/{file['title']}.md"
+                    os.rename(i, new_path)
+                    print(f"Changed {i} to {new_path}")
+
+    if sync_required is False:
+        print("Nothing to sync.")
 
 
 def main():
@@ -158,8 +159,3 @@ def main():
     file = save_path + filename
 
     open_zeka(file, args)
-
-
-if __name__ == "__main__":
-    # main()
-    test()
