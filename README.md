@@ -11,14 +11,20 @@ The tool encourages a flat directory structure of markdown files with containing
 # Examples
 ## Open quick note
 ```
-zk
+zk new
 ```
 
 ## Specifiy title
 ```
-zk -t 'my-note'
+zk new -t 'my-note'
 ```
 
 ## Add tags
 ```
+zk new -a 'foo, bar, baz'
+```
 
+## Sync
+```
+zk sync
+```
