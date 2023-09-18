@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "zeka"
-version = "1.0.0"
+version = "1.0.1"
 description = ""
 authors = ["Niklas Alexander Shern <nshern@protonmail.com>"]
 readme = "README.md"
