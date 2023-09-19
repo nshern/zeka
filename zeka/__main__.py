@@ -12,6 +12,22 @@ logging.basicConfig(level=logging.ERROR)
 
 
 def load_config_file():
+    """
+    Load the configuration file from the user's config directory.
+
+    The function looks for a file named 'zeka.toml' in the user's
+    config directory.
+    If the file exists, it attempts to load and return the configuration.
+    If any error occurs during loading, the error is logged and
+    None is returned.
+    If the file does not exist, None is returned.
+
+    Returns:
+
+    dict: The loaded configuration as a dictionary if
+    successful, None oterwise.
+    """
+
     file_path = os.path.expanduser("~/.config/zeka.toml")
     if os.path.isfile(file_path):
         try:
@@ -38,6 +54,22 @@ def get_files_in_directory(directory):
 
 
 def parse_args():
+    """
+    Parse command line arguments for the script.
+
+    The function sets up argument parsing for two commands:
+    'new' and 'sync'.
+    The 'new' command takes optional arguments for title, tags, language
+    and open.
+    The 'sync' command triggers a sync operation.
+
+    Returns:
+        argparse.Namespace: An object that holds the arguments as attributes.
+        The attributes will be 'title', 'tags', 'lang', 'open' for the 'new'
+    command,
+
+    and 'sync' for the 'sync' command.
+    """
     parser = argparse.ArgumentParser()
     subparser = parser.add_subparsers()
 
@@ -49,9 +81,6 @@ def parse_args():
 
     sync_parser = subparser.add_parser("sync", help="sync notes")
     sync_parser.set_defaults(sync=sync)
-
-    # TODO: Create clean parser to delete empty files or with only front matter
-    # clean_parser = subparser.add_parser("clean", help="clean up!")
 
     args = parser.parse_args()
 
