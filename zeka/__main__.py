@@ -82,6 +82,9 @@ def parse_args():
     sync_parser = subparser.add_parser("sync", help="sync notes")
     sync_parser.set_defaults(sync=sync)
 
+    clean_parser = subparser.add_parser("clean", help="clean notes")
+    clean_parser.set_defaults(clean=clean)
+
     args = parser.parse_args()
 
     return args
@@ -172,11 +175,34 @@ def sync():
         print("Nothing to sync.")
 
 
+def clean():
+    save_path = get_save_path()
+    files = get_files_in_directory(save_path)
+    files = [f"{save_path}{i}" for i in files]
+
+    clean_required = False
+
+    for i in files:
+        with open(i, "r") as f:
+            file = frontmatter.load(f)
+            if len(file.content) == 0:
+                clean_required = True
+                os.remove(i)
+                print(f"Deleted {i}")
+
+    if clean_required is False:
+        print("Nothing to clean.")
+
+
 def main():
     args = parse_args()
 
     if "sync" in args:
         args.sync()
+        return
+
+    if "clean" in args:
+        args.clean()
         return
 
     filename, front_matter = create_front_matter(args)
