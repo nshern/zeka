@@ -106,7 +106,8 @@ def create_front_matter(args):
         metadata["lang"] = "en-US"
 
     if args.tags:
-        metadata["tags"] = args.tags
+        tags = args.tags.split(",")
+        metadata["tags"] = f"{str(tags)}"
     else:
         metadata["tags"] = "[]"
 
